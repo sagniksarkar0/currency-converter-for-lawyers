@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<!-- saved from url=(0132)file:///C:/Users/SAGNIK~1.SAR/AppData/Local/Temp/MicrosoftEdgeDownloads/cb0dc747-212f-40be-baef-0575c1e61f0b/currency_converter.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Currency Converter for Lawyers</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3250;
+    --accent: #5b7cfa;
+    --accent-glow: rgba(91,124,250,0.18);
+    --text: #e8eaf6;
+    --text-muted: #8890b0;
+    --success: #43d9a2;
+    --warning: #f7c948;
+    --error: #ff6b6b;
+    --radius: 10px;
+    --font: 'Segoe UI', system-ui, sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    min-height: 100vh;
+    padding: 2rem 1rem 0 1rem;
+    display: flex;
+    flex-direction: column;
+  }
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    flex: 1;
+    width: 100%;
+  }
+  header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+  header h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--text);
+  }
+  header p {
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    margin-top: 0.4rem;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.8rem;
+    margin-bottom: 1.5rem;
+  }
+  .section-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.2rem;
+  }
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+  }
+  .form-group { display: flex; flex-direction: column; gap: 0.45rem; }
+  .form-group.full { grid-column: 1 / -1; }
+  label { font-size: 0.82rem; color: var(--text-muted); font-weight: 500; }
+  select, input[type="text"] {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    color: var(--text);
+    font-size: 1rem;
+    padding: 0.65rem 0.85rem;
+    outline: none;
+    width: 100%;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    font-family: var(--font);
+  }
+  select:focus, input[type="text"]:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+  select option { background: var(--surface2); }
+  .words-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 0.65rem 0.85rem;
+    font-size: 0.88rem;
+    min-height: 2.6rem;
+    line-height: 1.7;
+    transition: all 0.2s;
+  }
+  .words-box.empty { color: var(--text-muted); font-style: italic; }
+  .words-box.error { color: var(--error); }
+  .currency-checks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 0.2rem;
+  }
+  .currency-check {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.45rem 0.85rem;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    user-select: none;
+    font-size: 0.88rem;
+  }
+  .currency-check input[type="checkbox"] { display: none; }
+  .currency-check.checked {
+    border-color: var(--accent);
+    background: var(--accent-glow);
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .btn-convert {
+    width: 100%;
+    padding: 0.85rem;
+    background: var(--accent);
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    transition: opacity 0.2s, transform 0.1s;
+    margin-top: 0.5rem;
+  }
+  .btn-convert:hover { opacity: 0.88; }
+  .btn-convert:active { transform: scale(0.98); }
+  .btn-convert:disabled { opacity: 0.4; cursor: not-allowed; }
+  .rate-meta {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    text-align: right;
+    margin-top: -0.8rem;
+    margin-bottom: 1rem;
+  }
+  .rate-meta span { color: var(--warning); }
+  .results-section { display: none; }
+  .results-section.visible { display: block; }
+  .results-table-wrap { overflow-x: auto; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+  }
+  thead tr {
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+  th {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: rgba(91,124,250,0.06); }
+  td {
+    padding: 0.85rem 1rem;
+    vertical-align: top;
+    line-height: 1.55;
+  }
+  td.currency-col {
+    font-weight: 700;
+    color: var(--accent);
+    font-size: 1rem;
+    white-space: nowrap;
+  }
+  /* Combined figure + words cells */
+  td.style-col { font-size: 0.88rem; }
+  td.style-col .fig {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  td.style-col .wlabel {
+    display: block;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+    line-height: 1.45;
+  }
+  td.style-col .wlabel.indian { color: var(--success); }
+  td.rate-col {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+  .error-msg {
+    background: rgba(255,107,107,0.1);
+    border: 1px solid var(--error);
+    border-radius: 7px;
+    padding: 0.75rem 1rem;
+    color: var(--error);
+    font-size: 0.88rem;
+    margin-top: 1rem;
+  }
+  .spinner {
+    display: inline-block;
+    width: 18px; height: 18px;
+    border: 2px solid rgba(255,255,255,0.2);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    vertical-align: middle;
+    margin-right: 0.5rem;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  footer {
+    text-align: center;
+    padding: 1.6rem 1rem;
+    margin-top: 1rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    letter-spacing: 0.03em;
+  }
+  footer a { color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
+  footer a:hover { color: var(--accent); }
+  @media (max-width: 560px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .form-group.full { grid-column: 1; }
+    th, td { padding: 0.65rem 0.6rem; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <h1>Currency Converter for Lawyers</h1>
+    <p>Live exchange rates &nbsp;·&nbsp; Indian &amp; International notation</p>
+  </header>
+
+  <!-- Input Card -->
+  <div class="card">
+    <div class="section-label">Input</div>
+    <div class="form-grid">
+
+      <div class="form-group">
+        <label for="inputCurrency">Currency</label>
+        <select id="inputCurrency">
+          <option value="INR">INR — Indian Rupee</option>
+          <option value="USD">USD — US Dollar</option>
+          <option value="GBP">GBP — British Pound</option>
+          <option value="EUR">EUR — Euro</option>
+          <option value="CAD">CAD — Canadian Dollar</option>
+          <option value="CHF">CHF — Swiss Franc</option>
+          <option value="AUD">AUD — Australian Dollar</option>
+          <option value="JPY">JPY — Japanese Yen</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="inputFigure">Amount</label>
+        <input type="text" id="inputFigure" placeholder="e.g. 10,00,000 or 1,000,000" autocomplete="off">
+      </div>
+
+      <div class="form-group full">
+        <label>Amount in Words</label>
+        <div class="words-box empty" id="inputWords">Enter an amount above to see it in words</div>
+      </div>
+
+      <div class="form-group full">
+        <label>Output Currencies <span style="color:var(--text-muted);font-weight:400">(select one or more)</span></label>
+        <div class="currency-checks" id="outputChecks">
+          <label class="currency-check" data-val="INR"><input type="checkbox" value="INR">INR</label>
+          <label class="currency-check" data-val="USD"><input type="checkbox" value="USD">USD</label>
+          <label class="currency-check" data-val="GBP"><input type="checkbox" value="GBP">GBP</label>
+          <label class="currency-check" data-val="EUR"><input type="checkbox" value="EUR">EUR</label>
+          <label class="currency-check" data-val="CAD"><input type="checkbox" value="CAD">CAD</label>
+          <label class="currency-check" data-val="CHF"><input type="checkbox" value="CHF">CHF</label>
+          <label class="currency-check" data-val="AUD"><input type="checkbox" value="AUD">AUD</label>
+          <label class="currency-check" data-val="JPY"><input type="checkbox" value="JPY">JPY</label>
+        </div>
+      </div>
+
+    </div>
+    <br>
+    <button class="btn-convert" id="convertBtn" onclick="doConvert()">Convert</button>
+    <div id="errorMsg"></div>
+  </div>
+
+  <!-- Results Card -->
+  <div class="card results-section" id="resultsCard">
+    <div class="section-label">Results</div>
+    <div class="rate-meta" id="rateMeta"></div>
+    <div class="results-table-wrap">
+      <table id="resultsTable">
+        <thead>
+          <tr>
+            <th>CCY</th>
+            <th>International Style</th>
+            <th>Indian Style</th>
+            <th>Exchange Rate</th>
+          </tr>
+        </thead>
+        <tbody id="resultsBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  Sarkar's Legal Apps &nbsp;·&nbsp; <a href="mailto:sagniksarkar0@gmail.com">sagniksarkar0@gmail.com</a>
+</footer>
+
+<script>
+const CCY_INFO = {
+  INR: { name: "Indian Rupee",     decimals: 2 },
+  USD: { name: "US Dollar",        decimals: 2 },
+  GBP: { name: "British Pound",    decimals: 2 },
+  EUR: { name: "Euro",             decimals: 2 },
+  CAD: { name: "Canadian Dollar",  decimals: 2 },
+  CHF: { name: "Swiss Franc",      decimals: 2 },
+  AUD: { name: "Australian Dollar",decimals: 2 },
+  JPY: { name: "Japanese Yen",     decimals: 0 }
+};
+
+// Checkbox toggle
+document.querySelectorAll('.currency-check').forEach(lbl => {
+  lbl.addEventListener('click', () => {
+    const cb = lbl.querySelector('input');
+    cb.checked = !cb.checked;
+    lbl.classList.toggle('checked', cb.checked);
+    return false;
+  });
+});
+
+document.getElementById('inputCurrency').addEventListener('change', refreshInputWords);
+document.getElementById('inputFigure').addEventListener('input', refreshInputWords);
+
+function parseAmount(raw) {
+  if (!raw || raw.trim() === '') return null;
+  const cleaned = raw.replace(/,/g, '').trim();
+  if (!/^\d+(\.\d{0,2})?$/.test(cleaned)) return null;
+  const n = parseFloat(cleaned);
+  if (isNaN(n) || n < 0) return null;
+  return n;
+}
+
+const ONES = ['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine',
+  'Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen',
+  'Seventeen','Eighteen','Nineteen'];
+const TENS = ['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
+
+function wordsBelow1000(n) {
+  n = Math.floor(n);
+  if (n === 0) return '';
+  if (n < 20) return ONES[n];
+  if (n < 100) return TENS[Math.floor(n/10)] + (n%10 ? ' ' + ONES[n%10] : '');
+  return ONES[Math.floor(n/100)] + ' Hundred' + (n%100 ? ' ' + wordsBelow1000(n%100) : '');
+}
+
+function toIntlWords(n) {
+  n = Math.floor(n);
+  if (n === 0) return 'Zero';
+  const scales = [[1e12,'Trillion'],[1e9,'Billion'],[1e6,'Million'],[1e3,'Thousand']];
+  const parts = [];
+  for (const [val, name] of scales) {
+    if (n >= val) { parts.push(wordsBelow1000(Math.floor(n/val)) + ' ' + name); n = n % val; }
+  }
+  if (n > 0) parts.push(wordsBelow1000(n));
+  return parts.join(' ');
+}
+
+function toIndianWords(n) {
+  n = Math.floor(n);
+  if (n === 0) return 'Zero';
+  const parts = [];
+  const crore    = Math.floor(n / 1e7); n = n % 1e7;
+  const lakh     = Math.floor(n / 1e5); n = n % 1e5;
+  const thousand = Math.floor(n / 1e3); n = n % 1e3;
+  const rest     = n;
+  if (crore > 0)    parts.push(toIntlWords(crore) + ' Crore');
+  if (lakh > 0)     parts.push(wordsBelow1000(lakh) + ' Lakh');
+  if (thousand > 0) parts.push(wordsBelow1000(thousand) + ' Thousand');
+  if (rest > 0)     parts.push(wordsBelow1000(rest));
+  return parts.join(' ');
+}
+
+function decimalWords(n, ccy) {
+  if ((CCY_INFO[ccy]?.decimals ?? 2) === 0) return '';
+  const decPart = n.toFixed(2).split('.')[1];
+  if (!decPart || parseInt(decPart) === 0) return '';
+  const unitMap = { INR:'Paise', USD:'Cents', GBP:'Pence', EUR:'Cents',
+                    CAD:'Cents', CHF:'Centimes', AUD:'Cents', JPY:'' };
+  const unit = unitMap[ccy] || 'Cents';
+  if (!unit) return '';
+  return ' and ' + toIntlWords(parseInt(decPart)) + ' ' + unit;
+}
+
+function fmtIntl(n, ccy) {
+  const d = CCY_INFO[ccy]?.decimals ?? 2;
+  return ccy + ' ' + n.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
+}
+
+function fmtIndian(n, ccy) {
+  const d = CCY_INFO[ccy]?.decimals ?? 2;
+  const [intPart, decPart] = n.toFixed(d).split('.');
+  let result = '';
+  if (intPart.length <= 3) {
+    result = intPart;
+  } else {
+    const last3 = intPart.slice(-3);
+    const rest = intPart.slice(0, -3);
+    const groups = [];
+    let i = rest.length;
+    while (i > 0) { groups.unshift(rest.slice(Math.max(0, i-2), i)); i -= 2; }
+    result = groups.join(',') + ',' + last3;
+  }
+  if (d > 0 && decPart) result += '.' + decPart;
+  return ccy + ' ' + result;
+}
+
+function refreshInputWords() {
+  const raw = document.getElementById('inputFigure').value;
+  const ccy = document.getElementById('inputCurrency').value;
+  const box = document.getElementById('inputWords');
+  const num = parseAmount(raw);
+  if (raw.trim() === '') {
+    box.className = 'words-box empty';
+    box.textContent = 'Enter an amount above to see it in words';
+    return;
+  }
+  if (num === null) {
+    box.className = 'words-box error';
+    box.textContent = 'Invalid number — please check your input';
+    return;
+  }
+  const intlW = ccy + ' ' + toIntlWords(Math.floor(num)) + decimalWords(num, ccy);
+  const indW  = ccy + ' ' + toIndianWords(Math.floor(num)) + decimalWords(num, ccy);
+  box.className = 'words-box';
+  box.innerHTML =
+    `<span style="color:var(--text)">${intlW}</span><br>` +
+    `<span style="color:var(--success)">${indW}</span>`;
+}
+
+function fullWords(n, ccy) {
+  const name = CCY_INFO[ccy].name;
+  const dec  = decimalWords(n, ccy);
+  return {
+    intl:   name + ' ' + toIntlWords(Math.floor(n))   + dec,
+    indian: name + ' ' + toIndianWords(Math.floor(n)) + dec
+  };
+}
+
+async function doConvert() {
+  const btn    = document.getElementById('convertBtn');
+  const errDiv = document.getElementById('errorMsg');
+  errDiv.innerHTML = '';
+
+  const inputCcy = document.getElementById('inputCurrency').value;
+  const amount   = parseAmount(document.getElementById('inputFigure').value);
+
+  if (amount === null) {
+    errDiv.innerHTML = '<div class="error-msg">&#9888; Please enter a valid number (up to 2 decimal places).</div>';
+    return;
+  }
+  const outputCcys = [...document.querySelectorAll('#outputChecks input:checked')].map(c => c.value);
+  if (outputCcys.length === 0) {
+    errDiv.innerHTML = '<div class="error-msg">&#9888; Please select at least one output currency.</div>';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Fetching rates…';
+
+  try {
+    const targets = outputCcys.filter(c => c !== inputCcy);
+    let rates = { [inputCcy]: 1 };
+
+    if (targets.length > 0) {
+      const url = `https://api.frankfurter.dev/v1/latest?base=${inputCcy}&symbols=${targets.join(',')}`;
+      const resp = await fetch(url);
+      if (!resp.ok) throw new Error('API responded with status ' + resp.status);
+      const data = await resp.json();
+      rates = { ...rates, ...data.rates };
+      document.getElementById('rateMeta').innerHTML =
+        `Rates as of <span>${data.date}</span> · Source: Frankfurter / ECB`;
+    } else {
+      document.getElementById('rateMeta').innerHTML = `Same-currency · no conversion applied`;
+    }
+
+    const tbody = document.getElementById('resultsBody');
+    tbody.innerHTML = '';
+
+    for (const toCcy of outputCcys) {
+      const rate = (toCcy === inputCcy) ? 1 : rates[toCcy];
+      if (rate == null) continue;
+      const decimals  = CCY_INFO[toCcy]?.decimals ?? 2;
+      const converted = parseFloat((amount * rate).toFixed(decimals));
+      const wds       = fullWords(converted, toCcy);
+      const rateStr   = (toCcy === inputCcy) ? '—' : `1 ${inputCcy} = ${rate.toFixed(4)} ${toCcy}`;
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="currency-col">${toCcy}</td>
+        <td class="style-col">
+          <span class="fig">${fmtIntl(converted, toCcy)}</span>
+          <span class="wlabel">(${wds.intl})</span>
+        </td>
+        <td class="style-col">
+          <span class="fig">${fmtIndian(converted, toCcy)}</span>
+          <span class="wlabel indian">(${wds.indian})</span>
+        </td>
+        <td class="rate-col">${rateStr}</td>
+      `;
+      tbody.appendChild(tr);
+    }
+
+    document.getElementById('resultsCard').className = 'card results-section visible';
+    document.getElementById('resultsCard').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+  } catch(e) {
+    errDiv.innerHTML = `<div class="error-msg">&#9888; Could not fetch exchange rates. Please check your connection and try again.<br><small>${e.message}</small></div>`;
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = 'Convert';
+  }
+}
+
+document.getElementById('inputFigure').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doConvert();
+});
+</script>
+
+</body></html>
